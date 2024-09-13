@@ -40,6 +40,7 @@ int main() {
 	//Vertex data goes here
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	const char* vertexShaderSource = "#version 330 core\n"
