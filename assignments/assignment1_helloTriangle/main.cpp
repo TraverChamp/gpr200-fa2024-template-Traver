@@ -11,9 +11,9 @@ using namespace std;
 const int SCREEN_WIDTH = 2080;
 const int SCREEN_HEIGHT = 1440;
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+	 0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 0.5f, 1.0f,
+	 0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f
 };
 
 int main() {
@@ -43,15 +43,18 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	const char* vertexShaderSource = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"layout (location = 1) in vec4 aColor;"
-		"out vec4 Color;"
-		"void main()\n"
-		"{\n"
-		"   Color=aColor;\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"}\0";
+	const char* vertexShaderSource = R"(#version 330 core
+		layout(location = 0) in vec3 aPos;
+		layout (location = 1) in vec4 aColor;
+		out vec4 Color;
+		uniform float _Time;
+		void main()
+		{
+		   Color=aColor;
+			vec3 pos= aPos;
+			pos.y+=(cos(_Time*1.5+(pos.x*0.5)+(pos.z*0.75))*0.5);
+		   gl_Position = vec4(aPos.x, pos.y, aPos.z, 1.0);
+})";
 	//position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -73,9 +76,10 @@ int main() {
 	const char* fragmentShaderSource = R"(#version 330 core
 out vec4 FragColor;
 in vec4 Color;
+uniform float _Time;
 void main()
 {
-    FragColor = Color;
+    FragColor = Color * abs(tan(_Time));
 })";
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -100,11 +104,17 @@ void main()
 	}
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
+		glfwPollEvents(); 
+			float time = (float)glfwGetTime();
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		glUseProgram(shaderProgram);
+
+		int timeLoc = glGetUniformLocation(shaderProgram, "_Time");
+		glUniform1f(timeLoc, time);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//Drawing happens here!
