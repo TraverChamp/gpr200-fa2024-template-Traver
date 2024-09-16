@@ -13,9 +13,9 @@ using namespace std;
 const int SCREEN_WIDTH = 2080;
 const int SCREEN_HEIGHT = 1440;
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-	 0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 0.5f, 1.0f,
-	 0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f
+	-0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 0.5f, 1.0f,
+	 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+	 0.0f,  0.5f, 0.0f, 0.75f, 0.0f, 0.75f, 1.0f
 };
 
 int main() {
