@@ -15,9 +15,13 @@ const int SCREEN_HEIGHT = 1440;
 float vertices[] = {
 	-0.25f, -0.5f, 0.0f, 0.75f, 0.0f, 0.75f, 1.0f,
 	 0.25f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.25f,
-	 0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f
+	 0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+	 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f
 };
-
+unsigned int indicies[] = {
+	0, 1, 3,
+	1,2,3
+};
 int main() {
 	printf("Initializing...");
 	if (!glfwInit()) {
@@ -44,12 +48,17 @@ int main() {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 	//position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//color
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
+	
 	Shader mine("assets/Shader.vert", "assets/Shader.frag");
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -64,7 +73,8 @@ int main() {
 		mine.setFloat("_Time", time);
 
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//Drawing happens here!
 		glfwSwapBuffers(window);
 	}
