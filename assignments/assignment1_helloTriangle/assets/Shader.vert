@@ -7,6 +7,6 @@
 		{
 		   Color=aColor;
 			vec3 pos= aPos;
-			pos.y+=(cos(_Time*1.5+(pos.x*0.5)+(pos.z*0.75))*0.5);
-		   gl_Position = vec4(aPos.x, pos.y, aPos.z, 1.0);
+			pos.y+=(cos(_Time*1.5+(pos.x*0.5)+(pos.z*0.75))*0.25);
+		   gl_Position = vec4(aPos.x, -pos.y, aPos.z, 1.0);
 }
