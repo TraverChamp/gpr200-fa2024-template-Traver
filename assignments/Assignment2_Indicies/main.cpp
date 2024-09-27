@@ -71,8 +71,9 @@ int main() {
 	glEnableVertexAttribArray(2);
 	// load and create a texture 
    // -------------------------
-	unsigned int texture;
+	unsigned int texture, texture2;
 	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
 	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
@@ -94,7 +95,34 @@ int main() {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
+	// texture 2
+   // ---------
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+	unsigned char* data2 = stbi_load("C:/Users/Traver/Desktop/GMD-202/gpr200-fa2024-template-Traver/assignments/Assignment2_Indicies/textures/e477100dcfe568471a6c7640a6b7fc94.png", &width, &height, &nrChannels, 0);
+	if (data2)
+	{
+		// note that the would be awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data2);
 	Shader mine("assets/Shader.vert", "assets/Shader.frag");
+	glUniform1i(glGetUniformLocation(mine.ID, "texture1"), 0);
+	// or set it via the texture class
+	mine.setInt("texture2", 1);
+	stbi_set_flip_vertically_on_load(true);
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents(); 
@@ -102,7 +130,10 @@ int main() {
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
 		mine.use();
 
 		mine.setFloat("_Time", time);
