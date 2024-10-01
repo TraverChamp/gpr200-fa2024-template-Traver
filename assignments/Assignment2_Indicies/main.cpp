@@ -74,11 +74,11 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	unsigned int texture1 = loadTexture("assets/textures/redgem.png", GL_RGBA, GL_NEAREST, GL_REPEAT);
 	unsigned int texture2 = loadTexture("assets/textures/whitewebb.png", GL_RGBA, GL_NEAREST, GL_REPEAT);
-	Shader mine("assets/Shader.vert", "assets/Shader.frag");
+	Shader mine("..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\Shader.vert", "..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\Shader.frag");
 	glUniform1i(glGetUniformLocation(mine.ID, "texture1"), 0);
 	glUniform1i(glGetUniformLocation(mine.ID, "texture2"), 1);
 	//second shader
-	Shader theirs("assets/bgShader.vert", "assets/bgShader.frag");
+	Shader theirs("..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\bgShader.vert", "..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\bgShader.frag");
 	unsigned int texture3 = loadTexture("assets/textures/bluebriccs.png", GL_RGBA,GL_NEAREST, GL_CLAMP_TO_EDGE);
 	// or set it via the texture class
 	mine.setInt("texture1", 0);
@@ -104,7 +104,7 @@ int main() {
 		
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 1);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//Drawing happens here!
 		glfwSwapBuffers(window);
