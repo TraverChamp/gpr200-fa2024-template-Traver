@@ -77,9 +77,13 @@ int main() {
 	Shader mine("assets/Shader.vert", "assets/Shader.frag");
 	glUniform1i(glGetUniformLocation(mine.ID, "texture1"), 0);
 	glUniform1i(glGetUniformLocation(mine.ID, "texture2"), 1);
+	//second shader
+	Shader theirs("assets/bgShader.vert", "assets/bgShader.frag");
+	unsigned int texture3 = loadTexture("assets/textures/bluebriccs.png", GL_RGBA,GL_NEAREST, GL_CLAMP_TO_EDGE);
 	// or set it via the texture class
 	mine.setInt("texture1", 0);
 	mine.setInt("texture2", 1);
+	theirs.setInt("texture1", 2);
 	stbi_set_flip_vertically_on_load(true);
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -88,16 +92,19 @@ int main() {
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		theirs.use();
 		mine.use();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, texture3);
 		mine.setFloat("_Time", time);
 		
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//Drawing happens here!
 		glfwSwapBuffers(window);
