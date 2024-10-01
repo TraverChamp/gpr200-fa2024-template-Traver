@@ -9,6 +9,8 @@ file(
  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
  *.c *.cpp
 )
+configure_file(assets\\load_asset.h.in ${CMAKE_CURRENT_SOURCE_DIR}\\load_asset.h)
+
 #Copies this assignment2's asset folder to bin when it is built
 add_custom_target(copyAssetsA2 ALL COMMAND ${CMAKE_COMMAND} -E copy_directory
 ${CMAKE_CURRENT_SOURCE_DIR}/assets/

@@ -10,9 +10,11 @@
 #include <fstream>
 #include <sstream>
 #include "TraverB/texture.h"
+#include "load_asset.h"
 using namespace std;
 const int SCREEN_WIDTH = 2080;
 const int SCREEN_HEIGHT = 1440;
+
 float vertices[] = {
 	//positions are first 3, colors are next 4, then last 2 are texture coords
 	-0.5f, -0.5f, 0.0f, 0.75f, 0.0f, 0.75f, 1.0f, 0.0f, 0.0f,
@@ -68,48 +70,76 @@ int main() {
 	// texture coord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	// Resolve asset paths.
+	auto texture1Path = GetAssetPath("textures/redgem.png");
+	auto texture2Path = GetAssetPath("textures/whitewebb.png");
+	auto texture3Path = GetAssetPath("textures/bluebriccs.png");
+	auto shaderVPath = GetAssetPath("Shader.vert");
+	auto shaderFPath = GetAssetPath("Shader.frag");
+	auto shaderBackgroundVPath = GetAssetPath("bgShader.vert");
+	auto shaderBackgroundFPath = GetAssetPath("bgShader.frag");
 	// load and create a texture 
    // -------------------------
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	unsigned int texture1 = loadTexture("assets/textures/redgem.png", GL_RGBA, GL_NEAREST, GL_REPEAT);
-	unsigned int texture2 = loadTexture("assets/textures/whitewebb.png", GL_RGBA, GL_NEAREST, GL_REPEAT);
-	Shader mine("..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\Shader.vert", "..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\Shader.frag");
-	glUniform1i(glGetUniformLocation(mine.ID, "texture1"), 0);
-	glUniform1i(glGetUniformLocation(mine.ID, "texture2"), 1);
+	unsigned int texture1 = loadTexture(texture1Path.c_str(), GL_RGBA, GL_NEAREST, GL_REPEAT);
+	unsigned int texture2 = loadTexture(texture2Path.c_str(), GL_RGBA, GL_NEAREST, GL_REPEAT);
+	unsigned int texture3 = loadTexture(texture3Path.c_str(), GL_RGBA, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	// Create shader program for draing textured quad.
+	Shader texturedShader(shaderVPath.c_str(), shaderFPath.c_str());
+	Shader backgroundShader(shaderBackgroundVPath.c_str(), shaderBackgroundFPath.c_str());
 	//second shader
-	Shader theirs("..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\bgShader.vert", "..\\..\\..\\..\\assignments\\Assignment2_Indicies\\assets\\bgShader.frag");
-	unsigned int texture3 = loadTexture("assets/textures/bluebriccs.png", GL_RGBA,GL_NEAREST, GL_CLAMP_TO_EDGE);
+	
 	// or set it via the texture class
-	mine.setInt("texture1", 0);
-	mine.setInt("texture2", 1);
-	theirs.setInt("texture1", 2);
+	
 	stbi_set_flip_vertically_on_load(true);
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents(); 
-			float time = (float)glfwGetTime();
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		theirs.use();
-		mine.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texture3);
-		mine.setFloat("_Time", time);
-		
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 1);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//Drawing happens here!
+		// Draw #0
+		{
+			// Binds the first shader to the pipeline.
+			backgroundShader.use();
+
+			// Update current time in the bound shader program.
+			backgroundShader.setFloat("_Time", (float)glfwGetTime());
+			// Bind the current texture.
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture3);
+			// Bind the samples to texture units.
+			glUniform1i(glGetUniformLocation(texturedShader.ID, "texture1"), 0);
+			// Draw quad
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+		// Draw #1 
+		{
+			// Binds the first shader to the pipeline.
+			texturedShader.use();
+
+			// Update current time in the bound shader program.
+			texturedShader.setFloat("_Time", (float)glfwGetTime());
+			// Bind the current texture.
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture1);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, texture2);
+			// Bind the samples to texture units.
+			glUniform1i(glGetUniformLocation(texturedShader.ID, "texture1"), 0);
+			glUniform1i(glGetUniformLocation(texturedShader.ID, "texture2"), 1);
+			// Draw quad
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+		//update swapchain
 		glfwSwapBuffers(window);
 	}
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	printf("Shutting down...");
 }
+	
