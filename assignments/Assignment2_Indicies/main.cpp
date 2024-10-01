@@ -9,26 +9,25 @@
 #include <TraverB/shader.h>
 #include <fstream>
 #include <sstream>
+#include "TraverB/texture.h"
 using namespace std;
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
 const int SCREEN_WIDTH = 2080;
 const int SCREEN_HEIGHT = 1440;
 float vertices[] = {
 	//positions are first 3, colors are next 4, then last 2 are texture coords
-	-0.25f, -0.5f, 0.0f, 0.75f, 0.0f, 0.75f, 1.0f, 1.0f, 1.0f,
-	 0.25f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.25f, 1.0f, 0.0f,
-	 0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-	 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, 0.0f, 1.0f
+	-0.5f, -0.5f, 0.0f, 0.75f, 0.0f, 0.75f, 1.0f, 0.0f, 0.0f,
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.25f, 1.0f, 0.0f,
+	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	 -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, 0.0f, 1.0f
 };
 unsigned int indicies[] = {
 	0, 1, 2,
-	0,3,1
+	2, 3, 0
 };
 float texCoords[] = {
-	0.0f, 0.0f,  // lower-left corner  
-	1.0f, 0.0f,  // lower-right corner
-	0.5f, 1.0f   // top-center corner
+	0.5f, -0.5f,  // lower-left corner  
+	0.0f, 1.0f,  // lower-right corner
+	-0.5f, -1.0f   // top-center corner
 };
 int main() {
 	printf("Initializing...");
@@ -64,63 +63,22 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//color
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6*sizeof(float)));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
 	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 	// load and create a texture 
    // -------------------------
-	unsigned int texture, texture2;
-	glGenTextures(1, &texture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
-	int width, height, nrChannels;
-	// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-	unsigned char* data = stbi_load("C:/Users/Traver/Desktop/GMD-202/gpr200-fa2024-template-Traver/assignments/Assignment2_Indicies/textures/27239.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-	// texture 2
-   // ---------
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
-	unsigned char* data2 = stbi_load("C:/Users/Traver/Desktop/GMD-202/gpr200-fa2024-template-Traver/assignments/Assignment2_Indicies/textures/e477100dcfe568471a6c7640a6b7fc94.png", &width, &height, &nrChannels, 0);
-	if (data2)
-	{
-		// note that the would be awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data2);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	unsigned int texture1 = loadTexture("assets/textures/redgem.png", GL_RGBA, GL_NEAREST, GL_REPEAT);
+	unsigned int texture2 = loadTexture("assets/textures/whitewebb.png", GL_RGBA, GL_NEAREST, GL_REPEAT);
 	Shader mine("assets/Shader.vert", "assets/Shader.frag");
 	glUniform1i(glGetUniformLocation(mine.ID, "texture1"), 0);
+	glUniform1i(glGetUniformLocation(mine.ID, "texture2"), 1);
 	// or set it via the texture class
+	mine.setInt("texture1", 0);
 	mine.setInt("texture2", 1);
 	stbi_set_flip_vertically_on_load(true);
 	//Render loop
@@ -130,11 +88,11 @@ int main() {
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		mine.use();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		mine.use();
 
 		mine.setFloat("_Time", time);
 		
