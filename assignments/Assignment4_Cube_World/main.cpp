@@ -5,20 +5,27 @@
 #include <ew/ewMath/ewMath.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <TraverB/shader.h>
 #include <fstream>
 #include <sstream>
 #include "TraverB/texture.h"
 #include "load_asset.h"
+
 using namespace std;
 const int SCREEN_WIDTH = 2080;
 const int SCREEN_HEIGHT = 1440;
+void processInput(GLFWwindow* window);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 // camera
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
+float deltaTime = 0.0f;	// time between current frame and last frame
+float lastFrame = 0.0f;
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch = 0.0f;
@@ -26,9 +33,6 @@ float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 float fov = 45.0f;
 
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
 
 float vertices[] = {
 	   -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
@@ -38,8 +42,8 @@ float vertices[] = {
 	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f,
 	   -0.5f, -0.5f, -0.5f, 0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f,
 
-	   -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f,  1.0f,  0.0f, 0.0f,
-		0.5f, -0.5f, 1.0f, 0.5f, 0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+	   -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f,  1.0f,  0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
 		0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
 		0.5f,  0.5f,  0.5f, 0.0f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
 	   -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
@@ -64,10 +68,10 @@ float vertices[] = {
 		0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f,
 		0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
 	   -0.5f, -0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-	   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 1.0f,
+	   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f, 0.0f, 1.0f,
 
 	   -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 		0.5f,  0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
 		0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
 	   -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
@@ -107,6 +111,10 @@ int main() {
 		return 1;
 	}
 	glEnable(GL_DEPTH_TEST);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	//Initialization goes here!
 	//Vertex data
 	unsigned int VAO, VBO, EBO;
@@ -156,11 +164,26 @@ int main() {
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents(); 
+		deltaTime = glfwGetTime() - lastFrame;
+		lastFrame = glfwGetTime();
+		processInput(window);
+
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		// Bind the current texture.
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture3);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		// Bind the samples to texture units.
+		glUniform1i(glGetUniformLocation(texturedShader.ID, "texture1"), 0);
+		glUniform1i(glGetUniformLocation(texturedShader.ID, "texture2"), 1);
+		// Draw quad
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Draw #0
 		{
 			// Binds the first shader to the pipeline.
@@ -186,22 +209,23 @@ int main() {
 
 			// camera/view transformation
 			glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+			//glm::mat4 view = glm::lookAt(glm::vec3(0,0,-5), glm::vec3(0),glm::vec3(0,1,0));
 		    texturedShader.setMat4("view", view);
 
 		
 			// Update current time in the bound shader program.
 			texturedShader.setFloat("_Time", (float)glfwGetTime());
-			// Bind the current texture.
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texture1);
+			for (unsigned int i = 0; i < 20; i++)
+			{
+				// calculate the model matrix for each object and pass it to shader before drawing
+				glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+				model = glm::translate(model, cubePositions[i]);
+				float angle = 20.0f * i;
+				model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+				texturedShader.setMat4("model", model);
 
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, texture2);
-			// Bind the samples to texture units.
-			glUniform1i(glGetUniformLocation(texturedShader.ID, "texture1"), 0);
-			glUniform1i(glGetUniformLocation(texturedShader.ID, "texture2"), 1);
-			// Draw quad
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 		}
 		//update swapchain
 		glfwSwapBuffers(window);
