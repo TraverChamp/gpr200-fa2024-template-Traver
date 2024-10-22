@@ -102,7 +102,8 @@ glm::vec3 cubePositions[] = {
 	glm::vec3(2.6f, -4.0f, -5.0f),
 	glm::vec3(1.5f,  4.0f, 5.0f),
 	glm::vec3(-3.0f,  0.4f, -3.0f),
-	glm::vec3(-2.6f,  -0.5f, -1.5f)
+	glm::vec3(-2.6f,  -0.5f, -1.5f),
+	glm::vec3(-5.6f,  -1.5f, -3.5f)
 };
 int main() {
 	printf("Initializing...");
@@ -225,7 +226,7 @@ int main() {
 		
 			// Update current time in the bound shader program.
 			texturedShader.setFloat("_Time", (float)glfwGetTime());
-			for (unsigned int i = 0; i < 20; i++)
+			for (unsigned int i = 0; i < 21; i++)
 			{
 				// calculate the model matrix for each object and pass it to shader before drawing
 				glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
