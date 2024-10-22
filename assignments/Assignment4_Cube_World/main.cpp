@@ -31,7 +31,7 @@ float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 re
 float pitch = 0.0f;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
-float fov = 45.0f;
+float fov = 60.0f;
 
 
 float vertices[] = {
@@ -91,8 +91,18 @@ glm::vec3 cubePositions[] = {
 	glm::vec3(-1.7f,  3.0f, -7.5f),
 	glm::vec3(1.3f, -2.0f, -2.5f),
 	glm::vec3(1.5f,  2.0f, -2.5f),
-	glm::vec3(1.5f,  0.2f, -1.5f),
-	glm::vec3(-1.3f,  1.0f, -1.5f)
+	glm::vec3(3.0f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f),
+	glm::vec3(-2.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  -5.0f, 15.0f),
+	glm::vec3(-1.5f, 2.2f, 2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(3.6f, -0.4f, 7.0f),
+	glm::vec3(-3.4f,  6.0f, -7.5f),
+	glm::vec3(2.6f, -4.0f, -5.0f),
+	glm::vec3(1.5f,  4.0f, 5.0f),
+	glm::vec3(-3.0f,  0.4f, -3.0f),
+	glm::vec3(-2.6f,  -0.5f, -1.5f)
 };
 int main() {
 	printf("Initializing...");
@@ -239,8 +249,10 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) ==GLFW_PRESS) {
+		float cameraSpeed = static_cast<float>(5 * deltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -249,6 +261,11 @@ void processInput(GLFWwindow* window)
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	//up and down
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraUp;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraUp;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -304,6 +321,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	fov -= (float)yoffset;
 	if (fov < 1.0f)
 		fov = 1.0f;
-	if (fov > 45.0f)
-		fov = 45.0f;
+	if (fov > 120.0f)
+		fov = 120.0f;
 }
