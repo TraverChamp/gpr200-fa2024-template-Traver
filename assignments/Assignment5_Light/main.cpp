@@ -172,7 +172,11 @@ int main() {
 	//second shader
 	
 	// or set it via the texture class
-	
+	//IMGUI stuffs
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init();
 	stbi_set_flip_vertically_on_load(true);
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -180,6 +184,7 @@ int main() {
 		deltaTime = glfwGetTime() - lastFrame;
 		lastFrame = glfwGetTime();
 		processInput(window);
+		
 
 		//Clear framebuffer
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
@@ -238,6 +243,22 @@ int main() {
 				texturedShader.setMat4("model", model);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+			//Imgui drawing
+			{
+				//window establish
+				ImGui_ImplGlfw_NewFrame();
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui::NewFrame();
+
+				//variable implementation
+				ImGui::Begin("Settings");
+				ImGui::Text("Add controlss Here!");
+				ImGui::End();
+
+				//render all
+				ImGui::Render();
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			}
 		}
 		//update swapchain
