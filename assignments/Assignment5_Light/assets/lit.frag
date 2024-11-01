@@ -6,7 +6,9 @@ in vec2 TexCoord;
 uniform float _Time;
 in vec3 Normal;  
 in vec3 FragPos;  
-  
+uniform float ambientStrength;
+uniform float specularStrength;
+uniform float shininessStrength;
 uniform vec3 lightPos; 
 uniform vec3 viewPos; 
 uniform vec3 lightColor;
@@ -22,7 +24,6 @@ FragColor = vec4(textColor.rgb * result, 1);return;
 } */
 void main() {
 // ambient
-    float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 
@@ -32,12 +33,12 @@ void main() {
     vec3 diffuse = diff * lightColor;
     
     // specular
-    float specularStrength = 0.5;
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessStrength);
     vec3 specular = specularStrength * spec * lightColor;  
     vec4 textColor =texture(texture1, TexCoord);
     vec3 result = (ambient + diffuse + specular);
     FragColor = vec4(result*textColor.rgb, 1.0);
+    FragColor = vec4(Normal, 1.0);
     }

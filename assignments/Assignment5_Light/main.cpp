@@ -224,6 +224,7 @@ int main() {
 		// Bind the samples to texture units.
 		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture1"), 0);
 		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture2"), 1);
+		glm::vec3 lightPos = glm::vec3(0.0f);
 		// Draw quad
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Draw #0
@@ -265,9 +266,10 @@ int main() {
 				float angle = 20.0f * i;
 				model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 				lightCubeShader.setMat4("model", model);
-				lightCubeShader.setFloat("shininess", mat.shininess);
-				lightCubeShader.setFloat("ambient", mat.ambientK);
-				lightCubeShader.setFloat("specular", mat.specular);
+				lightCubeShader.setVec3("lightPos", lightPos);
+				lightCubeShader.setFloat("shininessStrength", mat.shininess);
+				lightCubeShader.setFloat("ambientStrength", mat.ambientK);
+				lightCubeShader.setFloat("specularStrength", mat.specular);
 				lightCubeShader.setFloat("diffuse", mat.diffuseK);
 				lightCubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -288,6 +290,8 @@ int main() {
 				//ImGui::ColorEdit3("Light Color", &lightColor.r);
 				ImGui::SliderFloat("Ambient K", &mat.ambientK, 0.0f, 1.0f);
 				ImGui::SliderFloat("Shininess", &mat.shininess, 2.0f, 1024.0f);
+				ImGui::SliderFloat("Specular K", &mat.specular, 0.0f, 1.0f);
+				ImGui::SliderFloat("Diffuse K", &mat.shininess, 0.0f, 1.0f);
 				ImGui::Checkbox("Check", &test);
 				ImGui::End();
 
@@ -297,7 +301,7 @@ int main() {
 			}
 			// world transformation
 			glm::mat4 model = glm::mat4(1.0f);
-			glm::vec3 lightPos = glm::vec3(0.0f);
+			
 
 			// also draw the lamp object
 			unlitShader.use();
