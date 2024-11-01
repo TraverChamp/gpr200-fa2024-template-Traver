@@ -287,7 +287,7 @@ int main() {
 				//ImGui::DragFloat3("Light Position", &lightPosition.x, 0.1f);
 				//ImGui::ColorEdit3("Light Color", &lightColor.r);
 				ImGui::SliderFloat("Ambient K", &mat.ambientK, 0.0f, 1.0f);
-				ImGui::SliderFloat2("Shininess", &mat.shininess, 2.0f, 1024.0f);
+				ImGui::SliderFloat("Shininess", &mat.shininess, 2.0f, 1024.0f);
 				ImGui::Checkbox("Check", &test);
 				ImGui::End();
 
