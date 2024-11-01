@@ -12,10 +12,17 @@ uniform vec3 viewPos;
 uniform vec3 lightColor;
 // texture samplers
 uniform sampler2D texture1;
-void main()
+/*void main()
 {
+    float ambientStrength = 1;
+    vec3 ambient = ambientStrength * lightColor;
+    vec3 result = ambient;
+vec4 textColor = texture(texture1, TexCoord);
+FragColor = vec4(textColor.rgb * result, 1);return;
+} */
+void main() {
 // ambient
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 

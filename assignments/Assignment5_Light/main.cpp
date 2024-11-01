@@ -91,7 +91,6 @@ struct Material {
 };
 // world space positions of our cubes
 glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  0.0f),
 	glm::vec3(2.0f,  5.0f, -15.0f),
 	glm::vec3(-1.5f, -2.2f, -2.5f),
 	glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -111,8 +110,7 @@ glm::vec3 cubePositions[] = {
 	glm::vec3(1.5f,  4.0f, 5.0f),
 	glm::vec3(-3.0f,  0.4f, -3.0f),
 	glm::vec3(-2.6f,  -0.5f, -1.5f),
-	glm::vec3(-5.6f,  -1.5f, -3.5f),
-	glm::vec3(0.0f,  0.0f, 0.0f)
+	glm::vec3(-5.6f,  -1.5f, -3.5f)
 };
 int main() {
 	printf("Initializing...");
@@ -227,7 +225,7 @@ int main() {
 		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture1"), 0);
 		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture2"), 1);
 		// Draw quad
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Draw #0
 		{
 			// Binds the first shader to the pipeline.
@@ -259,7 +257,7 @@ int main() {
 		
 			// Update current time in the bound shader program.
 			lightCubeShader.setFloat("_Time", (float)glfwGetTime());
-			for (unsigned int i = 0; i < 21; i++)
+			for (unsigned int i = 0; i < 19; i++)
 			{
 				// calculate the model matrix for each object and pass it to shader before drawing
 				glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -271,6 +269,7 @@ int main() {
 				lightCubeShader.setFloat("ambient", mat.ambientK);
 				lightCubeShader.setFloat("specular", mat.specular);
 				lightCubeShader.setFloat("diffuse", mat.diffuseK);
+				lightCubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 			bool test = false;
@@ -285,6 +284,10 @@ int main() {
 				//variable implementation
 				ImGui::Begin("Settings");
 				ImGui::Text("Add controlss Here!");
+				//ImGui::DragFloat3("Light Position", &lightPosition.x, 0.1f);
+				//ImGui::ColorEdit3("Light Color", &lightColor.r);
+				ImGui::SliderFloat("Ambient K", &mat.ambientK, 0.0f, 1.0f);
+				ImGui::SliderFloat2("Shininess", &mat.shininess, 2.0f, 1024.0f);
 				ImGui::Checkbox("Check", &test);
 				ImGui::End();
 
@@ -298,13 +301,14 @@ int main() {
 
 			// also draw the lamp object
 			unlitShader.use();
-			unlitShader.setMat4("projection", projection);
 			unlitShader.setMat4("view", view);
-			unlitShader.setMat4("model", model);
-			
-			model = glm::mat4(1.0f);
+			unlitShader.setMat4("projection", projection);
+			unlitShader.setMat4("_Color", glm::mat4(1.0f));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 			model = glm::translate(model, lightPos);
-			model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+			model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::scale(model, glm::vec3(0.2f));
 			unlitShader.setMat4("model", model);
 
 			glBindVertexArray(lightCubeVAO);
@@ -317,6 +321,7 @@ int main() {
 	glDeleteVertexArrays(1, &lightCubeVAO);
 	glDeleteBuffers(1, &VBO);
 	printf("Shutting down...");
+
 }
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
@@ -393,6 +398,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
+	yaw += xoffset;
 	yaw += xoffset;
 	pitch += yoffset;
 
