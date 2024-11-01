@@ -30,7 +30,7 @@ void main()
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * lightColor;  
-        
+    vec4 textColor =texture(texture1, TexCoord);
     vec3 result = (ambient + diffuse + specular);
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result*textColor.rgb, 1.0);
     }

@@ -165,7 +165,7 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(3);
 	// Resolve asset paths.
 	auto texture1Path = GetAssetPath("textures/redgem.png");
@@ -194,9 +194,9 @@ int main() {
 	//material setup
 	Material mat;
 	mat.shininess = 50.0f;
-	mat.ambientK = 0.5;
-	mat.diffuseK = 1.0;
-	mat.specular = 0.5;
+	mat.ambientK = 0.1;
+	mat.diffuseK = 0.5;
+	mat.specular = 1.0;
 	// or set it via the texture class
 	//IMGUI stuffs
 	IMGUI_CHECKVERSION();
@@ -224,8 +224,8 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 		// Bind the samples to texture units.
-		glUniform1i(glGetUniformLocation(texturedShader.ID, "texture1"), 0);
-		glUniform1i(glGetUniformLocation(texturedShader.ID, "texture2"), 1);
+		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture1"), 0);
+		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture2"), 1);
 		// Draw quad
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Draw #0
