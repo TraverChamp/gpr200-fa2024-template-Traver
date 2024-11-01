@@ -192,9 +192,12 @@ int main() {
 	//material setup
 	Material mat;
 	mat.shininess = 50.0f;
-	mat.ambientK = 0.1;
-	mat.diffuseK = 0.5;
-	mat.specular = 1.0;
+	mat.ambientK = 0.1f;
+	mat.diffuseK = 0.5f;
+	mat.specular = 1.0f;
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::mat4 unlitColor = glm::mat4(1.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f);
 	// or set it via the texture class
 	//IMGUI stuffs
 	IMGUI_CHECKVERSION();
@@ -224,7 +227,8 @@ int main() {
 		// Bind the samples to texture units.
 		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture1"), 0);
 		glUniform1i(glGetUniformLocation(lightCubeShader.ID, "texture2"), 1);
-		glm::vec3 lightPos = glm::vec3(0.0f);
+		
+		
 		// Draw quad
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Draw #0
@@ -271,11 +275,12 @@ int main() {
 				lightCubeShader.setFloat("ambientStrength", mat.ambientK);
 				lightCubeShader.setFloat("specularStrength", mat.specular);
 				lightCubeShader.setFloat("diffuse", mat.diffuseK);
-				lightCubeShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+				lightCubeShader.setVec3("lightColor", lightColor);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 			bool test = false;
-			
+			// world transformation
+			glm::mat4 model = glm::mat4(1.0f);
 			//Imgui drawing
 			{
 				//window establish
@@ -286,12 +291,12 @@ int main() {
 				//variable implementation
 				ImGui::Begin("Settings");
 				ImGui::Text("Add controlss Here!");
-				//ImGui::DragFloat3("Light Position", &lightPosition.x, 0.1f);
-				//ImGui::ColorEdit3("Light Color", &lightColor.r);
+				ImGui::DragFloat3("Light Position", &lightPos.x, 0.1f);
+				ImGui::ColorEdit3("Light Color", &lightColor.r); //effects the textured bricks, not the white one in the center projecting light
 				ImGui::SliderFloat("Ambient K", &mat.ambientK, 0.0f, 1.0f);
 				ImGui::SliderFloat("Shininess", &mat.shininess, 2.0f, 1024.0f);
 				ImGui::SliderFloat("Specular K", &mat.specular, 0.0f, 1.0f);
-				ImGui::SliderFloat("Diffuse K", &mat.shininess, 0.0f, 1.0f);
+				ImGui::SliderFloat("Diffuse K", &mat.diffuseK, 0.0f, 1.0f);
 				ImGui::Checkbox("Check", &test);
 				ImGui::End();
 
@@ -299,8 +304,7 @@ int main() {
 				ImGui::Render();
 				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			}
-			// world transformation
-			glm::mat4 model = glm::mat4(1.0f);
+			
 			
 
 			// also draw the lamp object

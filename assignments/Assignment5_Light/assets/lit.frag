@@ -40,5 +40,5 @@ void main() {
     vec4 textColor =texture(texture1, TexCoord);
     vec3 result = (ambient + diffuse + specular);
     FragColor = vec4(result*textColor.rgb, 1.0);
-    FragColor = vec4(Normal, 1.0);
+    //FragColor = vec4(Normal, 1.0);
     }
