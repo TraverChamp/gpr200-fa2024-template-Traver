@@ -83,6 +83,12 @@ unsigned int indicies[] = {
 	0, 1, 2,
 	2, 3, 0
 };
+struct Material {
+	float ambientK; //Ambient coefficient (0-1)							  
+	float diffuseK; //Diffuse coefficient (0-1)							  
+	float specular; //Specular coefficient (0-1)						  
+	float shininess; //Shininess										  
+};
 // world space positions of our cubes
 glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
@@ -105,7 +111,8 @@ glm::vec3 cubePositions[] = {
 	glm::vec3(1.5f,  4.0f, 5.0f),
 	glm::vec3(-3.0f,  0.4f, -3.0f),
 	glm::vec3(-2.6f,  -0.5f, -1.5f),
-	glm::vec3(-5.6f,  -1.5f, -3.5f)
+	glm::vec3(-5.6f,  -1.5f, -3.5f),
+	glm::vec3(0.0f,  0.0f, 0.0f)
 };
 int main() {
 	printf("Initializing...");
@@ -151,12 +158,25 @@ int main() {
 	// texture coord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+	unsigned int lightCubeVAO;
+	glGenVertexArrays(1, &lightCubeVAO);
+	glBindVertexArray(lightCubeVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(3);
 	// Resolve asset paths.
 	auto texture1Path = GetAssetPath("textures/redgem.png");
 	auto texture2Path = GetAssetPath("textures/whitewebb.png");
 	auto texture3Path = GetAssetPath("textures/bluebriccs.png");
 	auto shaderVPath = GetAssetPath("Shader.vert");
 	auto shaderFPath = GetAssetPath("Shader.frag");
+	auto lShaderVPath = GetAssetPath("lit.vert");
+	auto lShaderFPath = GetAssetPath("lit.frag");
+	auto uShaderVPath = GetAssetPath("unlit.vert");
+	auto uShaderFPath = GetAssetPath("unlit.frag");
 	auto shaderBackgroundVPath = GetAssetPath("bgShader.vert");
 	auto shaderBackgroundFPath = GetAssetPath("bgShader.frag");
 	// load and create a texture 
@@ -168,9 +188,15 @@ int main() {
 	unsigned int texture3 = loadTexture(texture3Path.c_str(), GL_RGBA, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	// Create shader program for drawing textured quad.
 	Shader texturedShader(shaderVPath.c_str(), shaderFPath.c_str());
+	Shader lightCubeShader(lShaderVPath.c_str(), lShaderFPath.c_str());
+	Shader unlitShader(uShaderVPath.c_str(), uShaderFPath.c_str());
 	//Shader backgroundShader(shaderBackgroundVPath.c_str(), shaderBackgroundFPath.c_str());
-	//second shader
-	
+	//material setup
+	Material mat;
+	mat.shininess = 50.0f;
+	mat.ambientK = 0.5;
+	mat.diffuseK = 1.0;
+	mat.specular = 0.5;
 	// or set it via the texture class
 	//IMGUI stuffs
 	IMGUI_CHECKVERSION();
@@ -220,19 +246,19 @@ int main() {
 		// Draw #1 
 		{
 			// Binds the first shader to the pipeline.
-			texturedShader.use();
+			lightCubeShader.use();
 			// pass projection matrix to shader (note that in this case it could change every frame)
 			glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-			texturedShader.setMat4("projection", projection);
+			lightCubeShader.setMat4("projection", projection);
 
 			// camera/view transformation
 			glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 			//glm::mat4 view = glm::lookAt(glm::vec3(0,0,-5), glm::vec3(0),glm::vec3(0,1,0));
-		    texturedShader.setMat4("view", view);
+			lightCubeShader.setMat4("view", view);
 
 		
 			// Update current time in the bound shader program.
-			texturedShader.setFloat("_Time", (float)glfwGetTime());
+			lightCubeShader.setFloat("_Time", (float)glfwGetTime());
 			for (unsigned int i = 0; i < 21; i++)
 			{
 				// calculate the model matrix for each object and pass it to shader before drawing
@@ -240,10 +266,15 @@ int main() {
 				model = glm::translate(model, cubePositions[i]);
 				float angle = 20.0f * i;
 				model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-				texturedShader.setMat4("model", model);
-
+				lightCubeShader.setMat4("model", model);
+				lightCubeShader.setFloat("shininess", mat.shininess);
+				lightCubeShader.setFloat("ambient", mat.ambientK);
+				lightCubeShader.setFloat("specular", mat.specular);
+				lightCubeShader.setFloat("diffuse", mat.diffuseK);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
+			bool test = false;
+			
 			//Imgui drawing
 			{
 				//window establish
@@ -254,17 +285,36 @@ int main() {
 				//variable implementation
 				ImGui::Begin("Settings");
 				ImGui::Text("Add controlss Here!");
+				ImGui::Checkbox("Check", &test);
 				ImGui::End();
 
 				//render all
 				ImGui::Render();
 				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			}
+			// world transformation
+			glm::mat4 model = glm::mat4(1.0f);
+			glm::vec3 lightPos = glm::vec3(0.0f);
+
+			// also draw the lamp object
+			unlitShader.use();
+			unlitShader.setMat4("projection", projection);
+			unlitShader.setMat4("view", view);
+			unlitShader.setMat4("model", model);
+			
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPos);
+			model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+			unlitShader.setMat4("model", model);
+
+			glBindVertexArray(lightCubeVAO);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 		//update swapchain
 		glfwSwapBuffers(window);
 	}
 	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &lightCubeVAO);
 	glDeleteBuffers(1, &VBO);
 	printf("Shutting down...");
 }
@@ -304,6 +354,12 @@ void processInput(GLFWwindow* window)
 			cameraPos += cameraSpeed * cameraUp;
 		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 			cameraPos -= cameraSpeed * cameraUp;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); //Unlocks
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Locks
 	}
 }
 
