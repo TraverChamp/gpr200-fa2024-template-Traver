@@ -37,47 +37,47 @@ float fov = 60.0f;
 
 
 float vertices[] = {
-	   -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-		0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.5f, 1.0f, 1.0f, 1.0f,
-	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f,
-	   -0.5f, -0.5f, -0.5f, 0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f,
+	   -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+		0.5f,  0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+		0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.5f, 1.0f, 1.0f, 1.0f,	0.0f, 0.0f, -1.0f,
+	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+	   -0.5f, -0.5f, -0.5f, 0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
 
-	   -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f,  1.0f,  0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f, 0.0f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-	   -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-	   -0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	   -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f,  1.0f,  0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
+		0.5f, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f,  1.0f, 0.0f, 0.0f,  0.0f,  1.0f,
+		0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  1.0f,
+		0.5f,  0.5f,  0.5f, 0.0f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  1.0f,
+	   -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,  0.0f,  1.0f,
+	   -0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
 
-	   -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-	   -0.5f, -0.5f, -0.5f, 1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f,
-	   -0.5f, -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	   -0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f,
-	   -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	   -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+	   -0.5f, -0.5f, -0.5f, 1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+	   -0.5f, -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+	   -0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+	   -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
 
-		0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+		0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+		0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+		0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
 
-	   -0.5f, -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-	   -0.5f, -0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-	   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f, 0.0f, 1.0f,
+	   -0.5f, -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+		0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+		0.5f, -0.5f,  0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+	   -0.5f, -0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+	   -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f, 0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
 
-	   -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-	   -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f
+	   -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+		0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+		0.5f,  0.5f,  0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+		0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+	   -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+	   -0.5f,  0.5f, -0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f,  0.0f,  1.0f,  0.0f
 };
 unsigned int indicies[] = {
 	0, 1, 2,
@@ -148,13 +148,13 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 	//position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//color
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
 	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(7 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -163,7 +163,7 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(9* sizeof(float)));
 	glEnableVertexAttribArray(3);
 	// Resolve asset paths.
 	auto texture1Path = GetAssetPath("textures/redgem.png");
