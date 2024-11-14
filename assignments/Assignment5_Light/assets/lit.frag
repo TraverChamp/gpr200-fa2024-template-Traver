@@ -9,7 +9,7 @@ in vec3 FragPos;
 uniform float ambientStrength;
 uniform float specularStrength;
 uniform float shininessStrength;
-uniform float diffuse;
+uniform float dDiffuse;
 uniform vec3 lightPos; 
 uniform vec3 viewPos; 
 uniform vec3 lightColor;
@@ -31,12 +31,12 @@ void main() {
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * diffuse * lightColor;
+    vec3 diffuse = diff * dDiffuse * lightColor;
 
     // Specular lighting
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessStrength);
+    vec3 viewDir    = normalize(viewPos - FragPos);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), shininessStrength);
     vec3 specular = specularStrength * spec * lightColor;
 
     vec3 result = (ambient + diffuse + specular);

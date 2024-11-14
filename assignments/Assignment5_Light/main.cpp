@@ -37,6 +37,7 @@ float fov = 60.0f;
 
 
 float vertices[] = {
+	//   x     y     z      R     G     B     A     U     V      Nx    Ny    Nz
 	   -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
 		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
 		0.5f,  0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
@@ -156,6 +157,8 @@ int main() {
 	// texture coord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(7 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(9 * sizeof(float)));
+	glEnableVertexAttribArray(3);
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
 	glGenVertexArrays(1, &lightCubeVAO);
@@ -163,8 +166,8 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(9* sizeof(float)));
-	glEnableVertexAttribArray(3);
+	//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(9* sizeof(float)));
+	//glEnableVertexAttribArray(3);
 	// Resolve asset paths.
 	auto texture1Path = GetAssetPath("textures/redgem.png");
 	auto texture2Path = GetAssetPath("textures/whitewebb.png");
@@ -274,8 +277,9 @@ int main() {
 				lightCubeShader.setFloat("shininessStrength", mat.shininess);
 				lightCubeShader.setFloat("ambientStrength", mat.ambientK);
 				lightCubeShader.setFloat("specularStrength", mat.specular);
-				lightCubeShader.setFloat("diffuse", mat.diffuseK);
+				lightCubeShader.setFloat("dDiffuse", mat.diffuseK);
 				lightCubeShader.setVec3("lightColor", lightColor);
+				lightCubeShader.setVec3("viewPos", cameraPos);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 			bool test = false;
